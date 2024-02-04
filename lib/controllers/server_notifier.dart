@@ -5,6 +5,7 @@ import 'dart:io';
 
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:network_info_plus/network_info_plus.dart';
 import 'package:path/path.dart';
 import 'package:printer_server/controllers/history_notifier.dart';
 import 'package:printer_server/controllers/notification_notifier.dart';
@@ -35,7 +36,8 @@ class ServerNotifier extends StateNotifier<ServerState> {
     log('Server started on ${_server?.address.host}:${_server?.port}');
 
     // Update state
-    state = state.copyWith(serverStarted: true);
+    final wifiIpAddress = await NetworkInfo().getWifiIP();
+    state = state.copyWith(serverStarted: true, wifiIpAddress: wifiIpAddress);
   }
 
   /// Handles the request
@@ -99,8 +101,8 @@ class ServerNotifier extends StateNotifier<ServerState> {
       type: FileType.custom,
       allowedExtensions: ['php'],
     );
-    if (result == null) return showErrorInvalidEngine();
-    if (result.files.length != 1) return showErrorInvalidEngine();
+    if (result == null) return;
+    if (result.files.length != 1) return;
 
     // Check file valid
     final file = result.files.single;

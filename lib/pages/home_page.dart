@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_expandable_fab/flutter_expandable_fab.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:printer_server/controllers/history_notifier.dart';
 import 'package:printer_server/controllers/server_notifier.dart';
@@ -6,11 +7,18 @@ import 'package:printer_server/shared/notification_scope.dart';
 import 'package:printer_server/widgets/printer_content_web_view.dart';
 import 'package:qr_flutter/qr_flutter.dart';
 
-class HomePage extends ConsumerWidget {
+class HomePage extends ConsumerStatefulWidget {
   const HomePage({super.key});
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  ConsumerState createState() => _HomePageState();
+}
+
+class _HomePageState extends ConsumerState<HomePage> {
+  final _key = GlobalKey<ExpandableFabState>();
+
+  @override
+  Widget build(BuildContext context) {
     return Scaffold(
       body: NotificationScope(
         child: Consumer(
@@ -60,10 +68,38 @@ class HomePage extends ConsumerWidget {
           },
         ),
       ),
-      floatingActionButton: FloatingActionButton.extended(
-        onPressed: () => showQRCode(context),
-        icon: const Icon(Icons.qr_code),
-        label: const Text('Show QR code'),
+      floatingActionButtonLocation: ExpandableFab.location,
+      floatingActionButton: ExpandableFab(
+        key: _key,
+        children: [
+          FloatingActionButton.extended(
+            onPressed: () {
+              final state = _key.currentState;
+              if (state != null) state.toggle();
+              showQRCode(context);
+            },
+            icon: const Icon(Icons.qr_code),
+            label: const Text('Show QR code'),
+          ),
+          FloatingActionButton.extended(
+            onPressed: () {
+              ref.read(serverProvider.notifier).linkToEngine();
+              final state = _key.currentState;
+              if (state != null) state.toggle();
+            },
+            icon: const Icon(Icons.link),
+            label: const Text('Link to engine'),
+          ),
+          FloatingActionButton(
+            onPressed: () => ref.read(historyProvider.notifier).toggleNotify(),
+            child: Consumer(
+              builder: (context, ref, child) {
+                final notify = ref.watch(historyProvider.select((value) => value.notify));
+                return Icon(notify ? Icons.notifications_active : Icons.notifications_off);
+              },
+            ),
+          ),
+        ],
       ),
     );
   }
@@ -82,7 +118,7 @@ class HomePage extends ConsumerWidget {
               dimension: 200,
               child: Consumer(
                 builder: (context, ref, child) {
-                  final url = ref.watch(serverProvider.select((value) => "${value.ipAddress}:${value.port}"));
+                  final url = ref.watch(serverProvider.select((value) => "${value.wifiIpAddress}:${value.port}"));
                   return QrImageView(data: url, size: 200);
                 },
               ),
@@ -90,9 +126,9 @@ class HomePage extends ConsumerWidget {
             const SizedBox(height: 16),
             Consumer(
               builder: (context, ref, child) {
-                final ipAddress = ref.watch(serverProvider.select((value) => value.ipAddress));
+                final wifiIpAddress = ref.watch(serverProvider.select((value) => value.wifiIpAddress));
                 return TextFormField(
-                  initialValue: ipAddress,
+                  initialValue: wifiIpAddress,
                   decoration: const InputDecoration(labelText: 'IP Address'),
                   readOnly: true,
                 );
@@ -114,17 +150,6 @@ class HomePage extends ConsumerWidget {
             ),
           ],
         ),
-        actions: [
-          Consumer(
-            builder: (context, ref, child) => TextButton(
-              onPressed: () {
-                ref.read(serverProvider.notifier).linkToEngine();
-                Navigator.pop(context);
-              },
-              child: const Text('Link to engine'),
-            ),
-          ),
-        ],
       ),
     );
   }

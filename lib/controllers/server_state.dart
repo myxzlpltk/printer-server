@@ -3,13 +3,15 @@ import 'package:equatable/equatable.dart';
 class ServerState extends Equatable {
   const ServerState({
     this.serverStarted = false,
-    this.ipAddress = "localhost",
+    this.wifiIpAddress = "127.0.0.1",
+    this.ipAddress = "127.0.0.1",
     this.port = 8080,
     this.engineName = "esc2html.php",
     this.enginePath = "D:\\Github\\escpos-tools",
   });
 
   final bool serverStarted;
+  final String wifiIpAddress;
   final String ipAddress;
   final int port;
   final String engineName;
@@ -17,6 +19,7 @@ class ServerState extends Equatable {
 
   ServerState copyWith({
     bool? serverStarted,
+    String? wifiIpAddress,
     String? ipAddress,
     int? port,
     String? engineName,
@@ -24,6 +27,7 @@ class ServerState extends Equatable {
   }) {
     return ServerState(
       serverStarted: serverStarted ?? this.serverStarted,
+      wifiIpAddress: wifiIpAddress ?? this.wifiIpAddress,
       ipAddress: ipAddress ?? this.ipAddress,
       port: port ?? this.port,
       engineName: engineName ?? this.engineName,
@@ -32,5 +36,5 @@ class ServerState extends Equatable {
   }
 
   @override
-  List<Object?> get props => [serverStarted, ipAddress, port, engineName, enginePath];
+  List<Object?> get props => [serverStarted, wifiIpAddress, ipAddress, port, engineName, enginePath];
 }

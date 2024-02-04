@@ -32,13 +32,16 @@ dependencies:
     sdk: flutter
   equatable: ^2.0.5
   file_picker: ^6.1.1
+  flutter_expandable_fab: ^2.0.0
   flutter_html_v3: ^3.0.6
   flutter_riverpod: ^2.4.10
+  network_info_plus: ^4.1.0+1
   path: ^1.8.3
   path_provider: ^2.1.2
   qr_flutter: ^4.1.0
   shelf: ^1.4.1
   webview_windows: ^0.3.0
+  win_ble: ^1.1.1
   window_manager: ^0.3.8
 
 dev_dependencies:
