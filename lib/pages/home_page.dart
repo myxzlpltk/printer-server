@@ -118,7 +118,7 @@ class _HomePageState extends ConsumerState<HomePage> {
               dimension: 200,
               child: Consumer(
                 builder: (context, ref, child) {
-                  final url = ref.watch(serverProvider.select((value) => "${value.wifiIpAddress}:${value.port}"));
+                  final url = ref.watch(serverProvider.select((value) => "http://${value.wifiIpAddress}:${value.port}/printer"));
                   return QrImageView(data: url, size: 200);
                 },
               ),
