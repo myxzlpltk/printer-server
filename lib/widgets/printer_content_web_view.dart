@@ -1,8 +1,5 @@
-import 'dart:developer';
-
 import 'package:flutter/material.dart';
 import 'package:webview_windows/webview_windows.dart';
-import 'package:window_manager/window_manager.dart';
 
 class PrinterContentWebView extends StatefulWidget {
   const PrinterContentWebView({super.key, required this.data});
