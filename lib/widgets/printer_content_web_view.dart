@@ -1,3 +1,6 @@
+import 'dart:convert';
+
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:webview_windows/webview_windows.dart';
 
@@ -49,16 +52,51 @@ class _PrinterContentWebViewState extends State<PrinterContentWebView> {
     return decision ?? WebviewPermissionDecision.none;
   }
 
+  Future<void> scrollWebview(double mouseX, double mouseY, double dx, double dy) {
+    return _controller.executeScript("""
+      function eleCanScroll(ele) {
+        if (ele.scrollTop > 0) { return ele; }
+        else {
+          ele.scrollTop++;
+          const top = ele.scrollTop;
+          top && (ele.scrollTop = 0);
+          if(top > 0){
+            return ele;
+          } else {
+            return eleCanScroll( ele.parentElement);
+          }
+        }
+      }
+      var el = document.elementFromPoint($mouseX,$mouseY);
+      var el2 = eleCanScroll(el);
+      el2.scrollBy($dx,$dy);
+      """);
+  }
+
   @override
   Widget build(BuildContext context) {
-    return Stack(
-      children: [
-        Webview(
-          _controller,
-          permissionRequested: _onPermissionRequested,
-        ),
-        if (!loaded) const Center(child: CircularProgressIndicator()),
-      ],
+    return Listener(
+      onPointerPanZoomUpdate: (event) {
+        final Offset panDelta = event.panDelta;
+        final Offset position = event.position;
+        scrollWebview(position.dx, position.dy, panDelta.dx, -panDelta.dy);
+      },
+      onPointerSignal: (signal) {
+        if (signal is PointerScrollEvent) {
+          final Offset scrollDelta = signal.scrollDelta;
+          final Offset position = signal.position;
+          scrollWebview(position.dx, position.dy, scrollDelta.dx, scrollDelta.dy);
+        }
+      },
+      child: Stack(
+        children: [
+          Webview(
+            _controller,
+            permissionRequested: _onPermissionRequested,
+          ),
+          if (!loaded) const Center(child: CircularProgressIndicator()),
+        ],
+      ),
     );
   }
 
