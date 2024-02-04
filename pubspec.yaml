@@ -41,7 +41,6 @@ dependencies:
   qr_flutter: ^4.1.0
   shelf: ^1.4.1
   webview_windows: ^0.3.0
-  win_ble: ^1.1.1
   window_manager: ^0.3.8
 
 dev_dependencies:
