@@ -18,7 +18,7 @@ final serverProvider = StateNotifierProvider.autoDispose<ServerNotifier, ServerS
 });
 
 class ServerNotifier extends StateNotifier<ServerState> {
-  ServerNotifier(this.ref) : super(const ServerState()) {
+  ServerNotifier(this.ref) : super(ServerState(ipAddress: InternetAddress.anyIPv4.address)) {
     _initServer();
   }
 
