@@ -29,11 +29,13 @@ class MyAppController extends ChangeNotifier {
 
   // State
   bool serverStarted = false;
-  List<String> history = [];
+  String? result;
+  DateTime? lastPrinted;
 
   /// Adds a result to the list
   void addResult(String result) {
-    history.insert(0, result);
+    this.result = result;
+    lastPrinted = DateTime.now();
     notifyListeners();
   }
 

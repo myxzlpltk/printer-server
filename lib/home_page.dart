@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:printer_server/controller.dart';
-import 'package:printer_server/printer_content.dart';
+import 'package:printer_server/printer_content_web_view.dart';
 import 'package:provider/provider.dart';
 import 'package:qr_flutter/qr_flutter.dart';
 
@@ -15,9 +15,10 @@ class HomePage extends StatelessWidget {
           final serverStarted = context.select<MyAppController, bool>((model) => model.serverStarted);
 
           if (serverStarted) {
-            final itemCount = context.select<MyAppController, int>((model) => model.history.length);
+            final result = context.select<MyAppController, String?>((model) => model.result);
+            final lastPrinted = context.select<MyAppController, DateTime?>((model) => model.lastPrinted);
 
-            if (itemCount == 0) {
+            if (result == null) {
               return Center(
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
@@ -35,14 +36,7 @@ class HomePage extends StatelessWidget {
               );
             }
 
-            return ListView.builder(
-              reverse: true,
-              itemCount: itemCount,
-              itemBuilder: (context, index) {
-                final result = context.read<MyAppController>().history[index];
-                return PrinterContent(data: result);
-              },
-            );
+            return PrinterContentWebView(key: ValueKey(lastPrinted), data: result);
           } else {
             return const Center(child: CircularProgressIndicator());
           }
