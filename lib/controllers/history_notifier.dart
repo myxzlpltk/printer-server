@@ -19,7 +19,7 @@ class HistoryNotifier extends StateNotifier<HistoryState> {
       lastPrinted: DateTime.now(),
     );
     // Show the window
-    await windowManager.show();
+    if (state.notify) await windowManager.show();
   }
 
   void toggleNotify() {
